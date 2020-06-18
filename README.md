@@ -1,4 +1,4 @@
-# lamba-mongo-health-check
+# lambda-mongo-health-check
 Lamba to check the health of a Mongo database
 
 ## Development
@@ -23,7 +23,7 @@ $ sam build --use-container
 ### Run locally
 
 ```shell script
-$ sam local invoke HelloWorldFunction --event events/event.json
+$ sam local invoke Function --event events/event.json
 ```
 
 ### Run unit tests
@@ -50,32 +50,28 @@ This requires the correct permissions to upload to bucket
 ```shell script
 sam package --template-file .aws-sam/build/template.yaml \
   --s3-bucket essentials-awss3lambdaartifactsbucket-x29ftznj6pqw \
-  --output-template-file .aws-sam/build/lamba-mongo-health-check.yaml
+  --output-template-file .aws-sam/build/lambda-mongo-health-check.yaml
 
-aws s3 cp .aws-sam/build/lamba-mongo-health-check.yaml s3://bootstrap-awss3cloudformationbucket-19qromfd235z9/lamba-mongo-health-check/master/
+aws s3 cp .aws-sam/build/lambda-mongo-health-check.yaml s3://bootstrap-awss3cloudformationbucket-19qromfd235z9/lambda-mongo-health-check/master/
 ```
 
 ## Install Lambda into AWS
 Create the following [sceptre](https://github.com/Sceptre/sceptre) file
 
-config/prod/lamba-mongo-health-check.yaml
+config/prod/lambda-mongo-health-check.yaml
 ```yaml
-template_path: "remote/lamba-mongo-health-check.yaml"
-stack_name: "lamba-mongo-health-check"
+template_path: "remote/lambda-mongo-health-check.yaml.yaml"
+stack_name: "lambda-mongo-health-check.yaml"
 stack_tags:
   Department: "Platform"
   Project: "Infrastructure"
   OwnerEmail: "it@sagebase.org"
 hooks:
   before_launch:
-    - !cmd "curl https://s3.amazonaws.com/bootstrap-awss3cloudformationbucket-19qromfd235z9/lamba-mongo-health-check/master/lamba-mongo-health-check.yaml --create-dirs -o templates/remote/lamba-mongo-health-check.yaml"
+    - !cmd "curl https://{{stack_group_config.admincentral_cf_bucket}}.s3.amazonaws.com/lambda-mongo-health-check.yaml/master/lambda-mongo-health-check.yaml.yaml --create-dirs -o templates/remote/lambda-mongo-health-check.yaml.yaml"
 ```
 
 Install the lambda using sceptre:
 ```shell script
-sceptre --var "profile=my-profile" --var "region=us-east-1" launch prod/lamba-mongo-health-check.yaml
+sceptre --var "profile=my-profile" --var "region=us-east-1" launch prod/lambda-mongo-health-check.yaml
 ```
-
-## Author
-
-Your Name Here.
